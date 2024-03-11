@@ -1,23 +1,51 @@
 import { useState, ChangeEvent } from "react";
 import { azureChatbotClient, deploymentId } from "./azure/open-ai-client";
+import { ChatRequestMessage } from "@azure/openai/models";
 import conversationTopics from "./conversation-topics/conversation-topics";
 import MessageBubble from "./components/messageBubble";
 import AppBar from "@mui/material/AppBar";
 import Toolbar from "@mui/material/Toolbar";
 import Typography from "@mui/material/Typography";
 import TextField from "@mui/material/TextField";
+import FormControl from "@mui/material/FormControl";
+import FormControlLabel from "@mui/material/FormControlLabel";
+import Switch from "@mui/material/Switch";
+import InputLabel from "@mui/material/InputLabel";
+import Select, { SelectChangeEvent } from "@mui/material/Select";
+import MenuItem from "@mui/material/MenuItem";
 import Button from "@mui/material/Button";
+import Alert from "@mui/material/Alert";
 import ChatIcon from "@mui/icons-material/Chat";
-import { ChatRequestMessage } from "@azure/openai/models";
+import { ThemeProvider, createTheme } from "@mui/material/styles";
+import CssBaseline from "@mui/material/CssBaseline";
+
+const darkTheme = createTheme({
+    palette: {
+        mode: "dark",
+    },
+});
+
+const lightTheme = createTheme();
 
 function App() {
+    const [darkMode, setDarkMode] = useState<boolean>(false);
+
     const [chatThread, setChatThread] = useState<Array<ChatRequestMessage>>([]);
+
     const [userInput, setUserInput] = useState<ChatRequestMessage>({
         role: "user",
         content: "",
     });
-    const [currentTopic, setCurrentTopic] =
-        useState<ConversationTopicAndInstructions>(conversationTopics[0]);
+
+    const [currentTopic, setCurrentTopic] = useState<string>(
+        Object.keys(conversationTopics)[0]
+    );
+
+    const handleTopicChange = (e: SelectChangeEvent) => {
+        setCurrentTopic(e.target.value);
+        setChatThread([]);
+        setUserInput({ ...userInput, content: "" });
+    };
 
     const submitMessage = async () => {
         setChatThread((oldThread) => [...oldThread, userInput]);
@@ -27,7 +55,11 @@ function App() {
             await azureChatbotClient
                 .getChatCompletions(
                     deploymentId,
-                    [...currentTopic.instructions, ...chatThread, userInput],
+                    [
+                        ...conversationTopics[currentTopic],
+                        ...chatThread,
+                        userInput,
+                    ],
                     {
                         temperature: 0.7,
                         topP: 0.95,
@@ -49,16 +81,61 @@ function App() {
             console.error("Error communicating with chatbot: ", error.message);
         }
     };
+
     return (
-        <>
-            <AppBar position="sticky">
+        <ThemeProvider theme={darkMode ? darkTheme : lightTheme}>
+            <CssBaseline />
+            <AppBar
+                position="sticky"
+                sx={{ padding: "0.5rem 0" }}
+                color={!darkMode ? "transparent" : "primary"}
+            >
                 <Toolbar>
                     <Typography component="h1" variant="h5">
                         Azure OpenAI Chatbot
                     </Typography>
+                    <FormControlLabel
+                        sx={{ marginLeft: "auto" }}
+                        control={
+                            <Switch
+                                value={darkMode}
+                                onChange={(e: ChangeEvent<HTMLInputElement>) =>
+                                    setDarkMode(e.target.checked)
+                                }
+                            />
+                        }
+                        label="Dark Mode"
+                    />
+                    <FormControl
+                        variant="filled"
+                        sx={{
+                            marginLeft: "1rem",
+                            width: "20rem",
+                        }}
+                    >
+                        <InputLabel id="topic-select-label">
+                            Conversation Topic
+                        </InputLabel>
+                        <Select
+                            value={currentTopic}
+                            label="Conversation Topic"
+                            labelId="topic-select-label"
+                            onChange={handleTopicChange}
+                            disableUnderline
+                        >
+                            {Object.keys(conversationTopics).map((topic) => (
+                                <MenuItem key={topic} value={topic}>
+                                    {topic}
+                                </MenuItem>
+                            ))}
+                        </Select>
+                    </FormControl>
                 </Toolbar>
             </AppBar>
             <main>
+                <Alert severity="info">
+                    {`The current topic of conversation is ${currentTopic}`}
+                </Alert>
                 <div className="chat-thread">
                     {chatThread.map((message, i) => (
                         <MessageBubble
@@ -68,7 +145,7 @@ function App() {
                         />
                     ))}
                 </div>
-                <div className="chat-input-area">
+                <div className={`chat-input-area${darkMode ? " dark" : ""}`}>
                     <TextField
                         value={userInput.content}
                         onChange={(e: ChangeEvent<HTMLTextAreaElement>) =>
@@ -88,7 +165,7 @@ function App() {
                     </Button>
                 </div>
             </main>
-        </>
+        </ThemeProvider>
     );
 }
 

@@ -1,4 +1,6 @@
-const TravelInstructions = [
+import { ChatRequestMessage } from "@azure/openai";
+
+const TravelInstructions: Array<ChatRequestMessage> = [
     {
         role: "system",
         content: `- You are a friendly fellow classmate in an English language learning class.  

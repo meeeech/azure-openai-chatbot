@@ -7,6 +7,7 @@ main {
     display: flex;
     flex-direction: column;
     align-items: center;
+    height: calc(100vh - 5rem);
 }
 
 .chat-thread {
@@ -27,7 +28,12 @@ main {
     justify-content: center;
     align-items: center;
     bottom: 0;
-    position: absolute;
-    width: calc(100% - 6rem);
+    position: sticky;
+    width: 100%;
     border-top: solid 1px gray;
+    margin-top: auto;
+
+    &.dark {
+        background-color: #121212;
+    }
 }
