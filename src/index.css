@@ -10,13 +10,14 @@ main {
     height: calc(100vh - 5rem);
 }
 
-.chat-thread {
+#chat-thread {
     padding: 2rem;
     display: flex;
     flex-direction: column;
     align-items: center;
     gap: 2rem;
     width: calc(100% - 4rem);
+    overflow: auto;
 }
 
 .chat-input-area {

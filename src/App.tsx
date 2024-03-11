@@ -1,4 +1,4 @@
-import { useState, ChangeEvent } from "react";
+import { useState, useEffect, ChangeEvent } from "react";
 import { azureChatbotClient, deploymentId } from "./azure/open-ai-client";
 import { ChatRequestMessage } from "@azure/openai/models";
 import conversationTopics from "./conversation-topics/conversation-topics";
@@ -27,8 +27,8 @@ const darkTheme = createTheme({
 
 const lightTheme = createTheme({
     palette: {
-        primary: {
-            main: "white",
+        secondary: {
+            main: "#ffffff",
         },
     },
 });
@@ -88,10 +88,19 @@ function App() {
         }
     };
 
+    useEffect(() => {
+        const threadContainer = document.getElementById("chat-thread");
+        threadContainer!.scrollTop = threadContainer!.scrollHeight;
+    }, [chatThread]);
+
     return (
         <ThemeProvider theme={darkMode ? darkTheme : lightTheme}>
             <CssBaseline />
-            <AppBar position="sticky" sx={{ padding: "0.5rem 0" }}>
+            <AppBar
+                position="sticky"
+                sx={{ padding: "0.5rem 0" }}
+                color={darkMode ? "primary" : "secondary"}
+            >
                 <Toolbar>
                     <Typography component="h1" variant="h5">
                         Azure OpenAI Chatbot
@@ -134,11 +143,11 @@ function App() {
                     </FormControl>
                 </Toolbar>
             </AppBar>
-            <main>
-                <Alert severity="info">
+            <main id="main">
+                <Alert severity="info" sx={{ position: "sticky", top: 0 }}>
                     {`The current topic of conversation is ${currentTopic}`}
                 </Alert>
-                <div className="chat-thread">
+                <div id="chat-thread">
                     {chatThread.map((message, i) => (
                         <MessageBubble
                             key={`${message.role}-message-${i}`}
