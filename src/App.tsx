@@ -25,7 +25,13 @@ const darkTheme = createTheme({
     },
 });
 
-const lightTheme = createTheme();
+const lightTheme = createTheme({
+    palette: {
+        primary: {
+            main: "white",
+        },
+    },
+});
 
 function App() {
     const [darkMode, setDarkMode] = useState<boolean>(false);
@@ -85,11 +91,7 @@ function App() {
     return (
         <ThemeProvider theme={darkMode ? darkTheme : lightTheme}>
             <CssBaseline />
-            <AppBar
-                position="sticky"
-                sx={{ padding: "0.5rem 0" }}
-                color={!darkMode ? "transparent" : "primary"}
-            >
+            <AppBar position="sticky" sx={{ padding: "0.5rem 0" }}>
                 <Toolbar>
                     <Typography component="h1" variant="h5">
                         Azure OpenAI Chatbot
