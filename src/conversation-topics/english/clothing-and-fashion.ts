@@ -17,7 +17,7 @@ const ClothingAndFashionInstructions: Array<ChatRequestMessage> = [
     },
     {
         role: "assistant",
-        content: "Hello! Let's talk about Clothing and Travel.",
+        content: "Hello! Let's talk about Clothing and Fashion.",
     },
     {
         role: "user",
