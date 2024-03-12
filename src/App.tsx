@@ -1,7 +1,7 @@
 import { useState, useEffect, ChangeEvent } from "react";
 import { azureChatbotClient, deploymentId } from "./azure/open-ai-client";
 import { ChatRequestMessage } from "@azure/openai/models";
-import conversationTopics from "./conversation-topics/greek/conversation-topics";
+import conversationTopics from "./conversation-topics/english/conversation-topics";
 import MessageBubble from "./components/messageBubble";
 import AppBar from "@mui/material/AppBar";
 import Toolbar from "@mui/material/Toolbar";
